@@ -1,0 +1,61 @@
+<idea-plugin version="2">
+    <id>org.coq.lang</id>
+    <name>Coq</name>
+    <version>0.0.1</version>
+
+    <vendor url="https://github.com/zjhmale/intellij-coq"/>
+
+    <description><![CDATA[
+      Coq language support
+    ]]></description>
+
+    <!--<change-notes><![CDATA[-->
+    <!--Add change notes here.<br>-->
+    <!--<em>most HTML tags may be used</em>-->
+    <!--]]>-->
+    <!--</change-notes>-->
+
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="143.381.42" until-build="162.9999"/>
+
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+         on how to target different products -->
+
+    <depends>com.intellij.modules.lang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+
+        <!-- Coq -->
+
+        <fileTypeFactory implementation="org.coq.lang.CoqFileTypeFactory"/>
+
+        <lang.parserDefinition language="Coq" implementationClass="org.coq.lang.core.parser.CoqParserDefinition"/>
+
+        <!-- Syntax Highlighter -->
+
+        <lang.syntaxHighlighterFactory language="Coq" implementationClass="org.coq.ide.highlight.CoqHighlighterFactory"/>
+        <colorSettingsPage implementation="org.coq.ide.highlight.CoqColorSettingsPage"/>
+
+        <!-- Commenter -->
+
+        <lang.commenter language="Coq" implementationClass="org.coq.ide.CoqCommenter"/>
+
+        <!-- Brace Matcher -->
+
+        <lang.braceMatcher language="Coq" implementationClass="org.coq.ide.CoqBraceMatcher"/>
+
+    </extensions>
+
+    <application-components>
+        <!-- Add your project components here -->
+    </application-components>
+
+    <project-components>
+        <!-- Add your project components here -->
+    </project-components>
+
+    <module-components>
+        <!-- Add your modules components here -->
+    </module-components>
+
+</idea-plugin>

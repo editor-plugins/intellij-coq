@@ -1,0 +1,175 @@
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Buildscript
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+}
+
+plugins {
+    id 'org.jetbrains.intellij' version "0.0.42"
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Projects
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
+
+tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+
+sourceSets {
+    main.java.srcDirs += "gen"
+}
+
+test {
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat = 'full'
+    }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// IntelliJ plugin configuration
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+intellij {
+
+    pluginName 'intellij-coq'
+
+    version ideaVersion
+    downloadSources Boolean.valueOf(downloadIdeaSources)
+    // FIXME: hack to support both IDEA 15 and IDEA 16.
+    // See https://github.com/intellij-rust/intellij-rust/issues/243
+    updateSinceUntilBuild = false
+
+    publish {
+        username publishUsername
+        password publishPassword
+        pluginId '8195'
+        channel publishChannel
+    }
+
+    sandboxDirectory project.rootDir.canonicalPath + "/.sandbox"
+
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// IDE support
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+apply plugin: 'idea'
+
+idea {
+    project {
+        jdkName         = javaVersion
+        languageLevel   = javaVersion
+    }
+
+    module {
+        generatedSourceDirs += file('gen')
+    }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Configurations
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+configurations {
+    gen
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Tasks
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+def jflexArgs(srcFlex, targetDir) {
+    return [    "--skel",   "lib/jflex/idea-flex.skeleton",
+                "-d",       targetDir,
+                srcFlex
+    ]
+}
+
+task generateCoqLexer(type: JavaExec) {
+    ext.src = "src/main/kotlin/org/coq/lang/core/lexer/coq.flex"
+    ext.dst = "gen/org/coq/lang/core/lexer/"
+
+    main = "jflex.Main"
+
+    args = jflexArgs(src, dst)
+
+    inputs  .file   file(src)
+    outputs .dir    file(dst + "_CoqLexer.java")
+
+    classpath configurations.gen
+}
+
+task generateCoqPsiAndParser(type: JavaExec) {
+    ext.src     = "src/main/kotlin/org/coq/lang/core/grammar/coq.bnf"
+    ext.dstRoot = "gen"
+
+    main = "org.intellij.grammar.Main"
+
+    args = [ dstRoot, file(src) ]
+
+    inputs  .file   file(src)
+    outputs .dir    fileTree(dir: dstRoot + '/org/coq/lang/core/', include: '**/*.java')
+
+    classpath configurations.gen
+}
+
+task generateLexers {
+    dependsOn generateCoqLexer
+}
+
+task generateParsers {
+    dependsOn generateCoqPsiAndParser
+}
+
+apply from: "shared.gradle"
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Dependencies
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
+
+    //gen 'de.jflex:jflex:1.6.0'
+    gen files('lib/jflex/jflex-1.7.0-SNAPSHOT.jar')
+    gen files('lib/gk/grammar-kit-patched.jar')
+
+    testCompile "junit:junit:4.+"
+    testCompile 'org.assertj:assertj-core:3.2.0'
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Misc
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+jar.archiveName = "coq.jar"
+
+version = "${version}.$buildNumber"
