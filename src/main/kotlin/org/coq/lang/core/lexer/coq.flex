@@ -108,7 +108,7 @@ COMMENT="(*" [^*] ~"*)" | "(*" "*"+ ")"
 "*"     { return MUL;                }
 "/"     { return DIV;                }
 "/\\"   { return CONJ;               }
-"\/"    { return DISJ;               }
+"\\/"   { return DISJ;               }
 "="     { return EQUAL;              }
 ":="    { return COLON_EQUAL;        }
 "<:"    { return LESS_COLON;         } // TODO: Check this symbol meaning
