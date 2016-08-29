@@ -52,58 +52,77 @@ COMMENT="(*" [^*] ~"*)" | "(*" "*"+ ")"
 "Parameter"   { return PARAMETER;   }
 "Parameters"  { return PARAMETERS;  }
 "Proof"       { return PROOF;       }
+"Eval"        { return EVAL;        }
+"Check"       { return CHECK;       }
+"Print"       { return PRINT;       }
+"Notation"    { return NOTATION;    }
 "Proposition" { return PROPOSITION; }
 "Qed"         { return QED;         }
 "Remark"      { return REMARK;      }
 "Theorem"     { return THEOREM;     }
 "Variable"    { return VARIABLE;    }
 "Variables"   { return VARIABLES;   }
+"Module"      { return MODULE;      }
+"End"         { return CAPEND;      }
 
 // Gallina
 
-"_"           { return UNDERSCORE;  }
-"as"          { return AS;          }
-"cofix"       { return COFIX;       }
-"else"        { return ELSE;        }
-"end"         { return END;         }
-"fix"         { return FIX;         }
-"for"         { return FOR;         }
-"forall"      { return FORALL;      }
-"fun"         { return FUN;         }
-"if"          { return IF;          }
-"in"          { return IN;          }
-"let"         { return LET;         }
-"match"       { return MATCH;       }
-"Prop"        { return PROP;        }
-"return"      { return RETURN;      }
-"Set"         { return SET;         }
-"then"        { return THEN;        }
-"Type"        { return TYPE;        }
-"with"        { return WITH;        }
+"_"             { return UNDERSCORE;    }
+"as"            { return AS;            }
+"cofix"         { return COFIX;         }
+"else"          { return ELSE;          }
+"end"           { return END;           }
+"fix"           { return FIX;           }
+"for"           { return FOR;           }
+"forall"        { return FORALL;        }
+"fun"           { return FUN;           }
+"if"            { return IF;            }
+"in"            { return IN;            }
+"let"           { return LET;           }
+"match"         { return MATCH;         }
+"Prop"          { return PROP;          }
+"return"        { return RETURN;        }
+"Set"           { return SET;           }
+"then"          { return THEN;          }
+"Type"          { return TYPE;          }
+"with"          { return WITH;          }
+"at"            { return AT;            }
+"level"         { return LEVEL;         }
+"left"          { return LEFT;          }
+"right"         { return RIGHT;         }
+"associativity" { return ASSOCIATIVITY; }
 
 
 /****************************** Special tokens **********************************/
 
-"%"     { return PERCENT; }
-"("     { return LEFT_PAREN; }
-")"     { return RIGHT_PAREN; }
-","     { return COMMA; }
+"%"     { return PERCENT;            }
+"("     { return LEFT_PAREN;         }
+")"     { return RIGHT_PAREN;        }
+","     { return COMMA;              }
 "->"    { return RIGHT_SIMPLE_ARROW; }
-"."     { return DOT;      }
-":"     { return COLON; }
-":="    { return COLON_EQUAL; }
-"<:"    { return LESS_COLON; } // TODO: Check this symbol meaning
+"<-"    { return LEFT_SIMPLE_ARROW;  }
+"."     { return DOT;                }
+":"     { return COLON;              }
+"+"     { return PLUS;               }
+"-"     { return MINUS;              }
+"*"     { return MUL;                }
+"/"     { return DIV;                }
+"/\\"   { return CONJ;               }
+"\/"    { return DISJ;               }
+"="     { return EQUAL;              }
+":="    { return COLON_EQUAL;        }
+"<:"    { return LESS_COLON;         } // TODO: Check this symbol meaning
 "=>"    { return RIGHT_DOUBLE_ARROW; }
-"@"     { return AT_SIGN; }
-"{"     { return LEFT_BRACE; }
-"|"     { return PIPE; }
-"}"     { return RIGHT_BRACE; }
+"@"     { return AT_SIGN;            }
+"{"     { return LEFT_BRACE;         }
+"|"     { return PIPE;               }
+"}"     { return RIGHT_BRACE;        }
 
 
 /****************************** Literals ****************************************/
 
-"-"?[0-9]+ { return INTEGER; }
-
+"-"?[0-9]+                           { return INTEGER; }
+('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\") { return STRING; }
 
 /****************************** Composed tokens *********************************/
 
